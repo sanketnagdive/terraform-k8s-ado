@@ -1,0 +1,62 @@
+trigger:
+- main
+
+variables:
+  # Set your variables here
+  azureSubscription: 'service-connection-name'
+  resourceGroup: 'resource-group-test'
+  location: 'East US'
+  tfBackendResourceGroup: 'tf-backend-rg'
+  tfBackendStorageAccount: 'storageaccount454124435'
+  tfBackendContainer: 'backend'
+  tfStateFile: 'terraform.tfstate'
+
+stages:
+- stage: Build
+  jobs:
+  - job: TerraformInit
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
+    - task: TerraformInstaller@0
+      inputs:
+        terraformVersion: 'latest'
+    
+    - script: |
+        terraform init \
+          -backend-config="resource_group_name=$(tfBackendResourceGroup)" \
+          -backend-config="storage_account_name=$(tfBackendStorageAccount)" \
+          -backend-config="container_name=$(tfBackendContainer)" \
+          -backend-config="key=$(tfStateFile)"
+      displayName: 'Terraform Init'
+
+    - script: terraform plan -out=tfplan
+      displayName: 'Terraform Plan'
+    
+    - publish: tfplan
+      artifact: tfplan
+
+- stage: Deploy
+  jobs:
+  - job: TerraformApply
+    pool:
+      vmImage: 'ubuntu-latest'
+    dependsOn: TerraformInit
+    steps:
+    - checkout: self
+
+    - download: current
+      artifact: tfplan
+
+    - task: TerraformInstaller@0
+      inputs:
+        terraformVersion: 'latest'
+    
+    - script: terraform apply "tfplan"
+      displayName: 'Terraform Apply'
+    
+    - script: |
+        echo "Deployment completed successfully."
+      displayName: 'Notify Completion'
+

@@ -1,5 +1,5 @@
 # Resource Group Configuration
-resource_group_name = "my-resource-group"
+resource_group_name = "test-resource-group"
 location            = "East US"
 
 # Azure Container Registry Configuration

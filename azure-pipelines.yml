@@ -3,7 +3,7 @@ trigger:
 
 variables:
   # Set your variables here
-  azureSubscription: 'service-connection-name'
+  azureSubscription: 'testconnection'
   resourceGroup: 'resource-group-test'
   location: 'East US'
   tfBackendResourceGroup: 'tf-backend-rg'

@@ -5,8 +5,8 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  azureSubscription: 'service-connection-name' # Azure service connection name
-  resourceGroup: 'my-resource-group'                # Resource Group where App Service is deployed
+  azureSubscription: 'testconnection' # Azure service connection name
+  resourceGroup: 'test-resource-group'                # Resource Group where App Service is deployed
   packagePath: '$(System.DefaultWorkingDirectory)/**/*.zip'
 
 stages:
